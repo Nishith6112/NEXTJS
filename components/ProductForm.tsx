@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Product } from "@/types/product";
 
 type Props = {
@@ -10,17 +10,22 @@ type Props = {
 };
 
 export default function ProductForm({ onSave, product, onCancel }: Props) {
-  const [name, setName] = useState("");
-  const [description, setDescription] = useState("");
-  const [price, setPrice] = useState("");
-  const [image, setImage] = useState<string | null>(null);
+  const [name, setName] = useState(product?.name ?? "");
+  const [description, setDescription] = useState(product?.description ?? "");
+  const [price, setPrice] = useState(product?.price?.toString() ?? "");
+  const [image, setImage] = useState<string | null>(product?.image ?? null);
+
+  const prevProductId = useRef<string | null>(null);
 
   useEffect(() => {
-    if (product) {
+    if (!product) return;
+
+    if (product.id !== prevProductId.current) {
       setName(product.name);
       setDescription(product.description);
       setPrice(product.price.toString());
       setImage(product.image);
+      prevProductId.current = product.id;
     }
   }, [product]);
 
@@ -29,13 +34,15 @@ export default function ProductForm({ onSave, product, onCancel }: Props) {
     if (!file) return;
 
     const reader = new FileReader();
-    reader.onload = () => setImage(reader.result as string);
+    reader.onloadend = () => {
+      setImage(reader.result as string);
+    };
     reader.readAsDataURL(file);
   }
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (!image) return alert("Please upload image");
+    if (!image) return alert("Please upload an image");
 
     onSave({
       id: product?.id || crypto.randomUUID(),
@@ -49,15 +56,16 @@ export default function ProductForm({ onSave, product, onCancel }: Props) {
     setDescription("");
     setPrice("");
     setImage(null);
+    prevProductId.current = null;
   }
 
   return (
-    <form onSubmit={handleSubmit} className="bg-white p-6 rounded-2xl shadow space-y-4">
+    <form className="bg-white p-6 rounded-2xl shadow space-y-4" onSubmit={handleSubmit}>
       <input
         className="input"
         placeholder="Product name"
         value={name}
-        onChange={e => setName(e.target.value)}
+        onChange={(e) => setName(e.target.value)}
         required
       />
 
@@ -65,7 +73,7 @@ export default function ProductForm({ onSave, product, onCancel }: Props) {
         className="input min-h-[90px]"
         placeholder="Description"
         value={description}
-        onChange={e => setDescription(e.target.value)}
+        onChange={(e) => setDescription(e.target.value)}
         required
       />
 
@@ -74,25 +82,28 @@ export default function ProductForm({ onSave, product, onCancel }: Props) {
         className="input"
         placeholder="Price"
         value={price}
-        onChange={e => setPrice(e.target.value)}
+        onChange={(e) => setPrice(e.target.value)}
         required
       />
 
       {/* IMAGE UPLOAD */}
       <div>
         <label className="block text-sm font-medium mb-2">
-          Products Image
+          Product Image
         </label>
 
         <label
           htmlFor="image-upload"
-          className="flex flex-col items-center justify-center border-2 border-dashed border-black rounded-xl p-6 cursor-pointer hover:border-[#06bcc1]"
+          className="flex flex-col items-center justify-center border-2 border-dashed border-neutral-300 rounded-xl p-6 cursor-pointer hover:border-[#06bcc1] transition"
         >
           {image ? (
-            <img src={image} className="h-40 w-full object-cover rounded-lg" />
+            <img
+              src={image}
+              alt="Preview"
+              className="h-40 w-full object-cover rounded-lg"
+            />
           ) : (
             <>
-           
               <p className="text-sm text-neutral-600">Click to upload image</p>
               <p className="text-xs text-neutral-400">PNG, JPG, JPEG</p>
             </>
