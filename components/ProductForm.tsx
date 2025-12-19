@@ -66,8 +66,7 @@ export default function ProductForm({ onSave, product, onCancel }: Props) {
         placeholder="Product name"
         value={name}
         onChange={(e) => setName(e.target.value)}
-        required
-      />
+        required      />
 
       <textarea
         className="input min-h-[90px]"
@@ -86,7 +85,6 @@ export default function ProductForm({ onSave, product, onCancel }: Props) {
         required
       />
 
-      {/* IMAGE UPLOAD */}
       <div>
         <label className="block text-sm font-medium mb-2">
           Product Image
@@ -94,8 +92,7 @@ export default function ProductForm({ onSave, product, onCancel }: Props) {
 
         <label
           htmlFor="image-upload"
-          className="flex flex-col items-center justify-center border-2 border-dashed border-neutral-300 rounded-xl p-6 cursor-pointer hover:border-[#06bcc1] transition"
-        >
+          className="flex flex-col items-center justify-center border-2 border-dashed border-neutral-300 rounded-xl p-6 cursor-pointer hover:border-[#06bcc1] transition">
           {image ? (
             <img
               src={image}
