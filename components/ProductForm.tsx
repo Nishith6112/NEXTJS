@@ -81,7 +81,7 @@ export default function ProductForm({ onSave, product, onCancel }: Props) {
       {/* IMAGE UPLOAD */}
       <div>
         <label className="block text-sm font-medium mb-2">
-          Product Image
+          Products Image
         </label>
 
         <label
